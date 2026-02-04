@@ -56,6 +56,7 @@
 
     .counter{ display:flex; gap:10px; }
 
+    /* 숫자 중앙 정렬 보정 완료 */
     .counter input{
         flex:1; 
         text-align:center; 
@@ -66,14 +67,15 @@
         height:55px;
         background: var(--card-bg);
         color: var(--text-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        
+        /* 중앙 정렬 핵심 수정 */
+        display: block;
+        line-height: 53px; /* 높이(55px)에 맞춰 수직 중앙 정렬 */
         padding: 0;
         margin: 0;
-        line-height: normal;
         appearance: none;
         -webkit-appearance: none;
+        outline: none;
     }
 
     .counter button{
@@ -153,12 +155,12 @@
 </div>
 
 <script>
-// 급여 설정 변경
-const DAY_PAY = 95000; // 하루 95,000원
-const SUPPORT_PAY = 15480; // 금액 동일
+// 급여 설정
+const DAY_PAY = 95000; 
+const SUPPORT_PAY = 15480; 
 const TAX_RATE = 0.033;
 
-let exchangeRates = { UZS: 9.5 }; // 기본값 (API 로딩 전)
+let exchangeRates = { UZS: 9.5 }; 
 let days = 0;
 let support = 0;
 
@@ -167,7 +169,7 @@ async function fetchRates() {
         const response = await fetch('https://open.er-api.com/v6/latest/KRW');
         const data = await response.json();
         if(data && data.rates) {
-            exchangeRates.UZS = data.rates.UZS; // 우즈베크 숨(UZS) 환율 적용
+            exchangeRates.UZS = data.rates.UZS; 
             calc();
         }
     } catch (e) { console.error("환율 로드 실패", e); }
@@ -197,18 +199,15 @@ function calc(){
     const tax = Math.round(gross * TAX_RATE);
     const net = gross - tax;
     
-    // 화면 표시 (원화 기준)
     document.getElementById("gross").innerText = gross.toLocaleString() + " won";
     document.getElementById("tax").innerText = tax.toLocaleString() + " won";
     document.getElementById("net").innerText = net.toLocaleString() + " won";
 
-    // 우즈베크 숨(UZS) 환산 표시
     const exDisplay = document.getElementById("ex-rate-display");
     const converted = Math.round(net * exchangeRates.UZS);
     exDisplay.innerText = `≈ ${converted.toLocaleString()} UZS (som)`;
 }
 
-// 초기 실행
 fetchRates();
 </script>
 
