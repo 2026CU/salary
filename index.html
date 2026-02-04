@@ -31,9 +31,24 @@ body{
     box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
+.lang-box{
+    text-align:right;
+    margin-bottom:10px;
+}
+
+.lang-box button{
+    border:none;
+    background:#e2e8f0;
+    padding:6px 10px;
+    border-radius:8px;
+    margin-left:5px;
+    cursor:pointer;
+    font-weight:600;
+}
+
 h1{
     text-align:center;
-    margin-bottom:30px;
+    margin-bottom:25px;
 }
 
 label{
@@ -65,10 +80,6 @@ label{
     font-size:24px;
     border-radius:12px;
     cursor:pointer;
-}
-
-.counter button:active{
-    transform:scale(0.95);
 }
 
 .reset{
@@ -109,8 +120,9 @@ label{
 }
 
 .final h2{
-    font-size:40px;
-    font-weight:800;
+    font-size:42px;
+    font-weight:900;
+    color:#16a34a;
 }
 
 </style>
@@ -121,101 +133,177 @@ label{
 
 <div class="container">
 
-    <h1>월급 계산기</h1>
+<div class="lang-box">
+<button onclick="setLang('ko')">한국어</button>
+<button onclick="setLang('zh')">中文</button>
+<button onclick="setLang('uz')">O'zbek</button>
+</div>
 
-    <!-- 출근일수 -->
-    <label>출근일수</label>
-    <div class="counter">
-        <button onclick="changeDays(-1)">-</button>
-        <input id="days" value="0" readonly>
-        <button onclick="changeDays(1)">+</button>
-    </div>
+<h1 id="title">월급 계산기</h1>
 
-    <!-- 육가공지원 -->
-    <label>육가공지원 (시간)</label>
-    <div class="counter">
-        <button onclick="changeSupport(-1)">-</button>
-        <input id="support" value="0" readonly>
-        <button onclick="changeSupport(1)">+</button>
-    </div>
+<label id="labelDays">출근일수</label>
+<div class="counter">
+<button onclick="changeDays(-1)">-</button>
+<input id="days" value="0" readonly>
+<button onclick="changeDays(1)">+</button>
+</div>
 
-    <!-- 초기화 -->
-    <button class="reset" onclick="resetAll()">초기화</button>
+<label id="labelSupport">육가공지원 (시간)</label>
+<div class="counter">
+<button onclick="changeSupport(-1)">-</button>
+<input id="support" value="0" readonly>
+<button onclick="changeSupport(1)">+</button>
+</div>
 
-    <!-- 결과 -->
-    <div class="result-box">
+<label id="labelWash">세척지원 (시간)</label>
+<div class="counter">
+<button onclick="changeWash(-1)">-</button>
+<input id="wash" value="0" readonly>
+<button onclick="changeWash(1)">+</button>
+</div>
 
-        <div class="line">
-            <span>세전 합계</span>
-            <strong id="gross">0원</strong>
-        </div>
+<button class="reset" id="resetBtn" onclick="resetAll()">초기화</button>
 
-        <div class="line deduction">
-            <span>공제 (3.3%)</span>
-            <strong id="tax">0원</strong>
-        </div>
+<div class="result-box">
 
-        <div class="final">
-            <p>실수령액</p>
-            <h2 id="net">0원</h2>
-        </div>
+<div class="line">
+<span id="grossLabel">세전 합계</span>
+<strong id="gross">0원</strong>
+</div>
 
-    </div>
+<div class="line deduction">
+<span id="taxLabel">공제 (3.3%)</span>
+<strong id="tax">0원</strong>
+</div>
 
+<div class="final">
+<p id="netLabel">실수령액</p>
+<h2 id="net">0원</h2>
+</div>
+
+</div>
 </div>
 
 <script>
 
 const DAY_PAY = 65000;
 const SUPPORT_PAY = 15480;
+const WASH_PAY = 15480;
 const TAX_RATE = 0.033;
 
 let days = 0;
 let support = 0;
+let wash = 0;
+let currentLang = "ko";
 
-function changeDays(amount){
-    days += amount;
-    if(days < 0) days = 0;
+const lang = {
 
-    document.getElementById("days").value = days;
-    calculate();
+ko:{
+title:"월급 계산기",
+days:"출근일수",
+support:"육가공지원 (시간)",
+wash:"세척지원 (시간)",
+reset:"초기화",
+gross:"세전 합계",
+tax:"공제 (3.3%)",
+net:"실수령액",
+won:"원"
+},
+
+zh:{
+title:"工资计算器",
+days:"出勤天数",
+support:"肉类加工支援 (小时)",
+wash:"清洗支援 (小时)",
+reset:"重置",
+gross:"税前合计",
+tax:"扣除 (3.3%)",
+net:"实发工资",
+won:"元"
+},
+
+uz:{
+title:"Oylik kalkulyatori",
+days:"Ish kunlari",
+support:"Go'sht bo'limi yordami (soat)",
+wash:"Yuvish yordami (soat)",
+reset:"Qayta tiklash",
+gross:"Soliqdan oldin",
+tax:"Soliq (3.3%)",
+net:"Qo'lga tegadigan",
+won:"so'm"
 }
 
-function changeSupport(amount){
-    support += amount;
-    if(support < 0) support = 0;
+};
 
-    document.getElementById("support").value = support;
-    calculate();
+function setLang(l){
+
+currentLang = l;
+localStorage.setItem("language", l);
+
+document.getElementById("title").innerText = lang[l].title;
+document.getElementById("labelDays").innerText = lang[l].days;
+document.getElementById("labelSupport").innerText = lang[l].support;
+document.getElementById("labelWash").innerText = lang[l].wash;
+document.getElementById("resetBtn").innerText = lang[l].reset;
+document.getElementById("grossLabel").innerText = lang[l].gross;
+document.getElementById("taxLabel").innerText = lang[l].tax;
+document.getElementById("netLabel").innerText = lang[l].net;
+
+calculate();
+}
+
+function changeDays(n){
+days = Math.max(0, days+n);
+document.getElementById("days").value = days;
+calculate();
+}
+
+function changeSupport(n){
+support = Math.max(0, support+n);
+document.getElementById("support").value = support;
+calculate();
+}
+
+function changeWash(n){
+wash = Math.max(0, wash+n);
+document.getElementById("wash").value = wash;
+calculate();
 }
 
 function resetAll(){
-    days = 0;
-    support = 0;
-
-    document.getElementById("days").value = 0;
-    document.getElementById("support").value = 0;
-
-    calculate();
+days = support = wash = 0;
+document.getElementById("days").value = 0;
+document.getElementById("support").value = 0;
+document.getElementById("wash").value = 0;
+calculate();
 }
 
 function calculate(){
 
-    const gross = (days * DAY_PAY) + (support * SUPPORT_PAY);
-    const tax = Math.round(gross * TAX_RATE);
-    const net = gross - tax;
+const gross = (days*DAY_PAY) + (support*SUPPORT_PAY) + (wash*WASH_PAY);
+const tax = Math.round(gross*TAX_RATE);
+const net = gross-tax;
 
-    document.getElementById("gross").innerText =
-        gross.toLocaleString() + "원";
+const currency = lang[currentLang].won;
 
-    document.getElementById("tax").innerText =
-        tax.toLocaleString() + "원";
+document.getElementById("gross").innerText =
+gross.toLocaleString()+" "+currency;
 
-    document.getElementById("net").innerText =
-        net.toLocaleString() + "원";
+document.getElementById("tax").innerText =
+tax.toLocaleString()+" "+currency;
+
+document.getElementById("net").innerText =
+net.toLocaleString()+" "+currency;
 }
 
+const savedLang = localStorage.getItem("language");
+
+if(savedLang){
+setLang(savedLang);
+}else{
 calculate();
+}
 
 </script>
 
