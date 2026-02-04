@@ -5,7 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>월급 계산기</title>
 
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
 <style>
+    :root {
+        --bg-color: #f1f5f9;
+        --card-bg: white;
+        --text-color: #1e293b;
+        --input-border: #ddd;
+        --result-bg: #f8fafc;
+        --line-color: #ddd;
+    }
+
+    /* 다크모드: 사용자 시스템 설정에 따라 자동 적용 */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --input-border: #334155;
+            --result-bg: #334155;
+            --line-color: #475569;
+        }
+    }
+
     *{
         box-sizing:border-box;
         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -13,20 +36,22 @@
 
     body{
         margin:0;
-        background:#f1f5f9;
+        background: var(--bg-color);
         display:flex;
         justify-content:center;
         align-items:center;
         min-height:100vh;
+        color: var(--text-color);
+        transition: 0.3s;
     }
 
     .container{
         width:100%;
         max-width:420px;
-        background:white;
+        background: var(--card-bg);
         padding:28px;
         border-radius:20px;
-        box-shadow:0 10px 30px rgba(0,0,0,0.08);
+        box-shadow:0 10px 30px rgba(0,0,0,0.2);
     }
 
     .lang-btns{
@@ -41,166 +66,126 @@
         margin-left:4px;
         cursor:pointer;
         font-weight:600;
-        transition: 0.2s;
+        background: var(--result-bg);
+        color: var(--text-color);
     }
 
     .active{
-        background:#3b82f6;
-        color:white;
+        background:#3b82f6 !important;
+        color:white !important;
     }
 
-    h1{
-        text-align:center;
-        margin-bottom:25px;
-    }
+    h1{ text-align:center; margin-bottom:25px; }
 
-    label{
-        font-weight:600;
-        display:block;
-        margin-top:18px;
-        margin-bottom:8px;
-    }
+    label{ font-weight:600; display:block; margin-top:18px; margin-bottom:8px; }
 
-    .counter{
-        display:flex;
-        gap:10px;
-    }
+    .counter{ display:flex; gap:10px; }
 
     .counter input{
-        flex:1;
-        text-align:center;
-        font-size:22px;
-        border:1px solid #ddd;
-        border-radius:12px;
-        height:55px;
-        background: #fff;
+        flex:1; text-align:center; font-size:22px;
+        border:1px solid var(--input-border);
+        border-radius:12px; height:55px;
+        background: var(--card-bg);
+        color: var(--text-color);
     }
 
     .counter button{
-        width:55px;
-        border:none;
-        background:#3b82f6;
-        color:white;
-        font-size:24px;
-        border-radius:12px;
-        cursor:pointer;
+        width:55px; border:none; background:#3b82f6;
+        color:white; font-size:24px; border-radius:12px; cursor:pointer;
     }
 
     .reset{
-        width:100%;
-        margin-top:20px;
-        height:48px;
-        border:none;
-        border-radius:12px;
-        background:#ef4444;
-        color:white;
-        font-size:16px;
-        cursor:pointer;
+        width:100%; margin-top:20px; height:48px; border:none;
+        border-radius:12px; background:#ef4444; color:white;
+        font-size:16px; cursor:pointer;
+    }
+
+    .save-btn {
+        width:100%; margin-top:10px; height:48px; border:none;
+        border-radius:12px; background:#16a34a; color:white;
+        font-size:16px; cursor:pointer; font-weight: 600;
     }
 
     .result-box{
-        margin-top:28px;
-        padding:20px;
-        border-radius:14px;
-        background:#f8fafc;
+        margin-top:28px; padding:20px; border-radius:14px;
+        background: var(--result-bg);
     }
 
     .line{
-        display:flex;
-        justify-content:space-between;
-        font-size:18px;
-        margin-bottom:10px;
-        align-items: center;
+        display:flex; justify-content:space-between;
+        font-size:18px; margin-bottom:10px; align-items: center;
     }
 
-    .deduction{
-        color:#ef4444;
-    }
+    .deduction{ color:#ef4444; }
 
     .final{
-        margin-top:18px;
-        padding-top:15px;
-        border-top:2px dashed #ddd;
+        margin-top:18px; padding-top:15px;
+        border-top:2px dashed var(--line-color);
         text-align:center;
     }
 
-    .final h2{
-        font-size:32px;
-        font-weight:800;
-        color:#16a34a;
-        margin: 10px 0 5px 0;
-    }
+    .final h2{ font-size:32px; font-weight:800; color:#16a34a; margin: 10px 0 5px 0; }
 
     .exchange-info {
-        font-size: 15px;
-        color: #64748b;
-        text-align: center;
-        margin-top: 8px;
-        font-weight: 500;
+        font-size: 15px; color: #64748b; text-align: center;
+        margin-top: 8px; font-weight: 500;
     }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<div class="lang-btns">
-    <button onclick="setLang('ko')" id="btn-ko">한국어</button>
-    <button onclick="setLang('zh')" id="btn-zh">中文</button>
-</div>
-
-<h1 id="title">월급 계산기</h1>
-
-<label id="label-days">출근일수</label>
-<div class="counter">
-    <button onclick="changeDays(-1)">-</button>
-    <input id="days" value="0" readonly>
-    <button onclick="changeDays(1)">+</button>
-</div>
-
-<label id="label-support">육가공지원 (시간)</label>
-<div class="counter">
-    <button onclick="changeSupport(-1)">-</button>
-    <input id="support" value="0" readonly>
-    <button onclick="changeSupport(1)">+</button>
-</div>
-
-<button class="reset" onclick="resetAll()" id="reset-text">초기화</button>
-
-<div class="result-box">
-    <div class="line">
-        <span id="pretax-text">세전 합계</span>
-        <strong id="gross">0원</strong>
+<div class="container" id="capture-area">
+    <div class="lang-btns">
+        <button onclick="setLang('ko')" id="btn-ko">한국어</button>
+        <button onclick="setLang('zh')" id="btn-zh">中文</button>
     </div>
 
-    <div class="line deduction">
-        <span id="tax-text">공제 (3.3%)</span>
-        <strong id="tax">0원</strong>
+    <h1 id="title">월급 계산기</h1>
+
+    <label id="label-days">출근일수</label>
+    <div class="counter">
+        <button onclick="changeDays(-1)">-</button>
+        <input id="days" value="0" readonly>
+        <button onclick="changeDays(1)">+</button>
     </div>
 
-    <div class="final">
-        <p id="net-text">실수령액</p>
-        <h2 id="net">0원</h2>
-        <div id="ex-rate-display" class="exchange-info"></div>
+    <label id="label-support">육가공지원 (시간)</label>
+    <div class="counter">
+        <button onclick="changeSupport(-1)">-</button>
+        <input id="support" value="0" readonly>
+        <button onclick="changeSupport(1)">+</button>
     </div>
-</div>
 
+    <button class="reset" onclick="resetAll()" id="reset-text">초기화</button>
+    <button class="save-btn" onclick="saveImage()" id="save-text">결과 저장하기</button>
+
+    <div class="result-box">
+        <div class="line">
+            <span id="pretax-text">세전 합계</span>
+            <strong id="gross">0원</strong>
+        </div>
+        <div class="line deduction">
+            <span id="tax-text">공제 (3.3%)</span>
+            <strong id="tax">0원</strong>
+        </div>
+        <div class="final">
+            <p id="net-text">실수령액</p>
+            <h2 id="net">0원</h2>
+            <div id="ex-rate-display" class="exchange-info"></div>
+        </div>
+    </div>
 </div>
 
 <script>
-// 급여 설정 (고정값)
 const DAY_PAY = 65000;
 const SUPPORT_PAY = 15480;
 const TAX_RATE = 0.033;
 
-// 환율 초기값 (API 로딩 전 대비)
 let exchangeRates = { CNY: 0.0053 }; 
-
 let days = 0;
 let support = 0;
 
-// 실시간 환율 API 호출 (위안화 기준)
 async function fetchRates() {
     try {
         const response = await fetch('https://open.er-api.com/v6/latest/KRW');
@@ -209,9 +194,7 @@ async function fetchRates() {
             exchangeRates.CNY = data.rates.CNY;
             calc();
         }
-    } catch (e) {
-        console.error("환율 로드 실패", e);
-    }
+    } catch (e) { console.error("환율 로드 실패", e); }
 }
 
 function changeDays(n){
@@ -237,31 +220,26 @@ function calc(){
     const gross = (days * DAY_PAY) + (support * SUPPORT_PAY);
     const tax = Math.round(gross * TAX_RATE);
     const net = gross - tax;
-
     const lang = localStorage.getItem("lang") || "ko";
     
-    // 원화 출력
     document.getElementById("gross").innerText = gross.toLocaleString() + " 원";
     document.getElementById("tax").innerText = tax.toLocaleString() + " 원";
     document.getElementById("net").innerText = net.toLocaleString() + " 원";
 
-    // 환율 환산 출력 (중국어 선택 시에만 위안화 표시)
     const exDisplay = document.getElementById("ex-rate-display");
     if (lang === "zh") {
         const converted = (net * exchangeRates.CNY).toFixed(2);
         exDisplay.innerText = `≈ ${parseFloat(converted).toLocaleString()} CNY (위안)`;
-    } else {
-        exDisplay.innerText = "";
-    }
+    } else { exDisplay.innerText = ""; }
 }
 
-// 다국어 텍스트 설정
 const text = {
     ko:{
         title:"월급 계산기",
         days:"출근일수 (6시간 - 65,000원)",
         support:"육가공지원 (1시간-15,480원)",
         reset:"초기화",
+        save:"결과 저장하기",
         pretax:"세전 합계",
         tax:"공제 (3.3%)",
         net:"실수령액"
@@ -271,6 +249,7 @@ const text = {
         days:"出勤天数",
         support:"肉类加工支援 (小时)",
         reset:"重置",
+        save:"保存结果",
         pretax:"税前合计",
         tax:"扣除 (3.3%)",
         net:"实发工资"
@@ -278,14 +257,8 @@ const text = {
 };
 
 function setLang(lang){
-    // 기존에 uz(우즈벡)로 저장되어 있었다면 ko로 강제 전환
-    if(lang === 'uz') lang = 'ko';
-    
     localStorage.setItem("lang", lang);
-
-    document.querySelectorAll(".lang-btns button")
-        .forEach(b=>b.classList.remove("active"));
-
+    document.querySelectorAll(".lang-btns button").forEach(b=>b.classList.remove("active"));
     const targetBtn = document.getElementById("btn-"+lang);
     if(targetBtn) targetBtn.classList.add("active");
 
@@ -293,17 +266,28 @@ function setLang(lang){
     document.getElementById("label-days").innerText=text[lang].days;
     document.getElementById("label-support").innerText=text[lang].support;
     document.getElementById("reset-text").innerText=text[lang].reset;
+    document.getElementById("save-text").innerText=text[lang].save;
     document.getElementById("pretax-text").innerText=text[lang].pretax;
     document.getElementById("tax-text").innerText=text[lang].tax;
     document.getElementById("net-text").innerText=text[lang].net;
-
     calc();
 }
 
-// 초기 실행
+// 이미지로 저장하는 함수
+function saveImage() {
+    const area = document.getElementById("capture-area");
+    html2canvas(area, {
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-color')
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'salary_result.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
+
 fetchRates();
 setLang(localStorage.getItem("lang") || "ko");
-
 </script>
 
 </body>
