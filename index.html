@@ -17,7 +17,7 @@
         --line-color: #ddd;
     }
 
-    /* 다크모드: 사용자 시스템 설정에 따라 자동 적용 */
+    /* 다크모드 자동 적용 */
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-color: #0f172a;
@@ -82,11 +82,20 @@
     .counter{ display:flex; gap:10px; }
 
     .counter input{
-        flex:1; text-align:center; font-size:22px;
+        flex:1; 
+        text-align:center; 
+        font-size:22px;
         border:1px solid var(--input-border);
-        border-radius:12px; height:55px;
+        border-radius:12px; 
+        height:55px;
         background: var(--card-bg);
         color: var(--text-color);
+        /* 중앙 정렬 보정 코드 */
+        line-height: 55px; 
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .counter button{
@@ -252,7 +261,7 @@ const text = {
         save:"保存结果",
         pretax:"税前合计",
         tax:"扣除 (3.3%)",
-        net:"实发工资"
+        net:"实발工资"
     }
 };
 
@@ -273,14 +282,17 @@ function setLang(lang){
     calc();
 }
 
-// 이미지로 저장하는 함수
 function saveImage() {
     const area = document.getElementById("capture-area");
+    // 현재 테마의 배경색을 가져와서 캡처 배경으로 설정
+    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-color');
+    
     html2canvas(area, {
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-color')
+        backgroundColor: bgColor,
+        scale: 2 // 화질 향상
     }).then(canvas => {
         const link = document.createElement('a');
-        link.download = 'salary_result.png';
+        link.download = '월급계산결과.png';
         link.href = canvas.toDataURL();
         link.click();
     });
