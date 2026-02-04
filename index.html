@@ -2,10 +2,8 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>월급 계산기</title>
-
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
     :root {
@@ -42,7 +40,7 @@
         align-items:center;
         min-height:100vh;
         color: var(--text-color);
-        transition: 0.3s;
+        padding: 20px;
     }
 
     .container{
@@ -85,17 +83,19 @@
         flex:1; 
         text-align:center; 
         font-size:22px;
+        font-weight: 700;
         border:1px solid var(--input-border);
         border-radius:12px; 
         height:55px;
         background: var(--card-bg);
         color: var(--text-color);
-        /* 중앙 정렬 보정 코드 */
-        line-height: 55px; 
-        padding: 0;
+        /* 모바일 중앙 정렬 보정 핵심 */
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 0;
+        margin: 0;
+        outline: none;
     }
 
     .counter button{
@@ -104,15 +104,9 @@
     }
 
     .reset{
-        width:100%; margin-top:20px; height:48px; border:none;
+        width:100%; margin-top:20px; height:52px; border:none;
         border-radius:12px; background:#ef4444; color:white;
-        font-size:16px; cursor:pointer;
-    }
-
-    .save-btn {
-        width:100%; margin-top:10px; height:48px; border:none;
-        border-radius:12px; background:#16a34a; color:white;
-        font-size:16px; cursor:pointer; font-weight: 600;
+        font-size:18px; cursor:pointer; font-weight: 600;
     }
 
     .result-box{
@@ -144,7 +138,7 @@
 
 <body>
 
-<div class="container" id="capture-area">
+<div class="container">
     <div class="lang-btns">
         <button onclick="setLang('ko')" id="btn-ko">한국어</button>
         <button onclick="setLang('zh')" id="btn-zh">中文</button>
@@ -167,7 +161,6 @@
     </div>
 
     <button class="reset" onclick="resetAll()" id="reset-text">초기화</button>
-    <button class="save-btn" onclick="saveImage()" id="save-text">결과 저장하기</button>
 
     <div class="result-box">
         <div class="line">
@@ -248,20 +241,18 @@ const text = {
         days:"출근일수 (6시간 - 65,000원)",
         support:"육가공지원 (1시간-15,480원)",
         reset:"초기화",
-        save:"결과 저장하기",
         pretax:"세전 합계",
         tax:"공제 (3.3%)",
         net:"실수령액"
     },
     zh:{
         title:"工资计算器",
-        days:"出勤天数",
-        support:"肉类加工支援 (小时)",
+        days:"出勤天数 (6小时 - 65,000원)",
+        support:"肉类加工支援 (1小时 - 15,480원)",
         reset:"重置",
-        save:"保存结果",
         pretax:"税前合计",
         tax:"扣除 (3.3%)",
-        net:"实발工资"
+        net:"实发工资"
     }
 };
 
@@ -275,27 +266,10 @@ function setLang(lang){
     document.getElementById("label-days").innerText=text[lang].days;
     document.getElementById("label-support").innerText=text[lang].support;
     document.getElementById("reset-text").innerText=text[lang].reset;
-    document.getElementById("save-text").innerText=text[lang].save;
     document.getElementById("pretax-text").innerText=text[lang].pretax;
     document.getElementById("tax-text").innerText=text[lang].tax;
     document.getElementById("net-text").innerText=text[lang].net;
     calc();
-}
-
-function saveImage() {
-    const area = document.getElementById("capture-area");
-    // 현재 테마의 배경색을 가져와서 캡처 배경으로 설정
-    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-color');
-    
-    html2canvas(area, {
-        backgroundColor: bgColor,
-        scale: 2 // 화질 향상
-    }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = '월급계산결과.png';
-        link.href = canvas.toDataURL();
-        link.click();
-    });
 }
 
 fetchRates();
@@ -304,5 +278,3 @@ setLang(localStorage.getItem("lang") || "ko");
 
 </body>
 </html>
-
-
