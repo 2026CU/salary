@@ -2,116 +2,151 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oylik kalkulyatori</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Oylik Kalkulyatori (UZS)</title>
 
 <style>
     :root {
-        --bg-color: #f1f5f9;
-        --card-bg: white;
-        --text-color: #1e293b;
-        --input-border: #ddd;
-        --result-bg: #f8fafc;
-        --line-color: #ddd;
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --text-color: #f1f5f9;
+        --input-border: #334155;
+        --result-bg: #334155;
+        --line-color: #475569;
+        --primary-blue: #3b82f6;
     }
 
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f1f5f9;
-            --input-border: #334155;
-            --result-bg: #334155;
-            --line-color: #475569;
-        }
+    * {
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-tap-highlight-color: transparent;
     }
 
-    *{
-        box-sizing:border-box;
-        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    }
-
-    body{
-        margin:0;
-        background: var(--bg-color);
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        min-height:100vh;
-        color: var(--text-color);
-    }
-
-    .container{
-        width:100%;
-        max-width:420px;
-        background: var(--card-bg);
-        padding:28px;
-        border-radius:20px;
-        box-shadow:0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    h1{ text-align:center; margin-bottom:25px; }
-
-    label{ font-weight:600; display:block; margin-top:18px; margin-bottom:8px; }
-
-    .counter{ display:flex; gap:10px; }
-
-    /* 숫자 중앙 정렬 보정 완료 */
-    .counter input{
-        flex:1; 
-        text-align:center; 
-        font-size:24px;
-        font-weight: 700;
-        border:1px solid var(--input-border);
-        border-radius:12px; 
-        height:55px;
-        background: var(--card-bg);
-        color: var(--text-color);
-        
-        /* 중앙 정렬 핵심 수정 */
-        display: block;
-        line-height: 53px; /* 높이(55px)에 맞춰 수직 중앙 정렬 */
-        padding: 0;
+    body {
         margin: 0;
-        appearance: none;
-        -webkit-appearance: none;
+        background: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: var(--text-color);
+        padding: 16px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 400px;
+        background: var(--card-bg);
+        padding: 24px;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    h1 { 
+        text-align: center; 
+        margin: 0 0 20px 0; 
+        font-size: 22px; 
+        font-weight: 800;
+        color: #fff;
+    }
+
+    label { 
+        font-weight: 700; 
+        display: block; 
+        margin-top: 15px; 
+        margin-bottom: 6px; 
+        font-size: 13px; 
+        color: #94a3b8;
+    }
+
+    .counter { 
+        display: flex; 
+        gap: 8px; 
+        width: 100%; 
+        align-items: center;
+    }
+
+    .counter input {
+        flex: 1; 
+        min-width: 0;
+        text-align: center; 
+        font-size: 22px;
+        font-weight: 800;
+        border: 1px solid var(--input-border);
+        border-radius: 12px; 
+        height: 52px;
+        background: #0f172a;
+        color: #fff;
         outline: none;
+        padding: 0;
     }
 
-    .counter button{
-        width:55px; border:none; background:#3b82f6;
-        color:white; font-size:24px; border-radius:12px; cursor:pointer;
+    .counter button {
+        width: 52px; 
+        height: 52px;
+        flex-shrink: 0;
+        border: none; 
+        background: var(--primary-blue);
+        color: white; 
+        font-size: 24px; 
+        border-radius: 12px; 
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .reset{
-        width:100%; margin-top:20px; height:52px; border:none;
-        border-radius:12px; background:#ef4444; color:white;
-        font-size:18px; cursor:pointer; font-weight: 600;
+    .reset {
+        width: 100%; 
+        margin-top: 20px; 
+        height: 52px; 
+        border: none;
+        border-radius: 12px; 
+        background: #ef4444; 
+        color: white;
+        font-size: 16px; 
+        cursor: pointer; 
+        font-weight: 700;
     }
 
-    .result-box{
-        margin-top:28px; padding:20px; border-radius:14px;
+    .result-box {
+        margin-top: 25px; 
+        padding: 20px; 
+        border-radius: 16px;
         background: var(--result-bg);
     }
 
-    .line{
-        display:flex; justify-content:space-between;
-        font-size:18px; margin-bottom:10px; align-items: center;
+    .line {
+        display: flex; 
+        justify-content: space-between;
+        font-size: 15px; 
+        margin-bottom: 10px; 
+        align-items: center;
     }
 
-    .deduction{ color:#ef4444; }
+    .deduction { color: #f87171; font-weight: 600; }
 
-    .final{
-        margin-top:18px; padding-top:15px;
-        border-top:2px dashed var(--line-color);
-        text-align:center;
+    .final {
+        margin-top: 15px; 
+        padding-top: 15px;
+        border-top: 2px dashed var(--line-color);
+        text-align: center;
     }
 
-    .final h2{ font-size:32px; font-weight:800; color:#16a34a; margin: 10px 0 5px 0; }
+    .final p { margin: 0; font-size: 14px; font-weight: 600; color: #94a3b8; }
 
-    .exchange-info {
-        font-size: 15px; color: #64748b; text-align: center;
-        margin-top: 8px; font-weight: 500;
+    .final h2 { 
+        font-size: 28px; 
+        font-weight: 900; 
+        color: #4ade80; 
+        margin: 8px 0 0 0; 
+    }
+
+    .rate-info {
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 8px;
+        text-align: center;
     }
 </style>
 </head>
@@ -119,93 +154,100 @@
 <body>
 
 <div class="container">
-    <h1 id="title">Oylik kalkulyatori</h1>
+    <h1>Oylik Kalkulyatori</h1>
 
-    <label id="label-days">Ish kunlari (95,000 som)</label>
+    <label>Ish kunlari (6s - 65,000 KRW)</label>
     <div class="counter">
-        <button onclick="changeDays(-1)">-</button>
-        <input id="days" value="0" readonly>
-        <button onclick="changeDays(1)">+</button>
+        <button onclick="changeVal('days6', -1)">-</button>
+        <input id="days6" value="0" readonly>
+        <button onclick="changeVal('days6', 1)">+</button>
     </div>
 
-    <label id="label-support">Yuvish yordami (15,480 som)</label>
+    <label>Ish kunlari (9s - 95,000 KRW)</label>
     <div class="counter">
-        <button onclick="changeSupport(-1)">-</button>
+        <button onclick="changeVal('days9', -1)">-</button>
+        <input id="days9" value="0" readonly>
+        <button onclick="changeVal('days9', 1)">+</button>
+    </div>
+
+    <label>Yuvish sexida yordam (1s - 15,480 KRW)</label>
+    <div class="counter">
+        <button onclick="changeVal('support', -1)">-</button>
         <input id="support" value="0" readonly>
-        <button onclick="changeSupport(1)">+</button>
+        <button onclick="changeVal('support', 1)">+</button>
     </div>
 
-    <button class="reset" onclick="resetAll()" id="reset-text">Qayta tiklash</button>
+    <button class="reset" onclick="resetAll()">Tozalash</button>
 
     <div class="result-box">
         <div class="line">
-            <span id="pretax-text">Soliqdan oldin</span>
-            <strong id="gross">0 won</strong>
+            <span>KRW (Soliqsiz)</span>
+            <strong id="gross">0 KRW</strong>
         </div>
         <div class="line deduction">
-            <span id="tax-text">Soliq (3.3%)</span>
-            <strong id="tax">0 won</strong>
+            <span>Ushlanma (3.3%)</span>
+            <strong id="tax">0 KRW</strong>
         </div>
         <div class="final">
-            <p id="net-text">Qo'lga tegadigan</p>
-            <h2 id="net">0 won</h2>
-            <div id="ex-rate-display" class="exchange-info"></div>
+            <p>Qo'lga tegadigan summa (UZS)</p>
+            <h2 id="net">0 UZS</h2>
+            <div id="rate-display" class="rate-info">Valyuta kursini yuklash...</div>
         </div>
     </div>
 </div>
 
 <script>
-// 급여 설정
-const DAY_PAY = 95000; 
-const SUPPORT_PAY = 15480; 
+const PAY = {
+    days6: 65000,
+    days9: 95000,
+    support: 15480
+};
 const TAX_RATE = 0.033;
+let KRW_TO_UZS = 9.7;
 
-let exchangeRates = { UZS: 9.5 }; 
-let days = 0;
-let support = 0;
+let data = {
+    days6: 0,
+    days9: 0,
+    support: 0
+};
 
 async function fetchRates() {
     try {
         const response = await fetch('https://open.er-api.com/v6/latest/KRW');
-        const data = await response.json();
-        if(data && data.rates) {
-            exchangeRates.UZS = data.rates.UZS; 
+        const resData = await response.json();
+        if(resData && resData.rates && resData.rates.UZS) {
+            KRW_TO_UZS = resData.rates.UZS;
+            document.getElementById('rate-display').innerText = `Kurs: 1 KRW ≈ ${KRW_TO_UZS.toFixed(2)} UZS`;
             calc();
         }
-    } catch (e) { console.error("환율 로드 실패", e); }
+    } catch (e) { 
+        document.getElementById('rate-display').innerText = "Valyuta kursini yangilab bo'lmadi";
+    }
 }
 
-function changeDays(n){
-    days = Math.max(0, days+n);
-    document.getElementById("days").value = days;
-    calc();
-}
-
-function changeSupport(n){
-    support = Math.max(0, support+n);
-    document.getElementById("support").value = support;
+function changeVal(key, n){
+    data[key] = Math.max(0, data[key] + n);
+    document.getElementById(key).value = data[key];
     calc();
 }
 
 function resetAll(){
-    days=0; support=0;
-    document.getElementById("days").value=0;
-    document.getElementById("support").value=0;
+    data = { days6: 0, days9: 0, support: 0 };
+    document.getElementById("days6").value = 0;
+    document.getElementById("days9").value = 0;
+    document.getElementById("support").value = 0;
     calc();
 }
 
 function calc(){
-    const gross = (days * DAY_PAY) + (support * SUPPORT_PAY);
-    const tax = Math.round(gross * TAX_RATE);
-    const net = gross - tax;
+    const grossKRW = (data.days6 * PAY.days6) + (data.days9 * PAY.days9) + (data.support * PAY.support);
+    const taxKRW = Math.round(grossKRW * TAX_RATE);
+    const netKRW = grossKRW - taxKRW;
+    const netUZS = Math.round(netKRW * KRW_TO_UZS);
     
-    document.getElementById("gross").innerText = gross.toLocaleString() + " won";
-    document.getElementById("tax").innerText = tax.toLocaleString() + " won";
-    document.getElementById("net").innerText = net.toLocaleString() + " won";
-
-    const exDisplay = document.getElementById("ex-rate-display");
-    const converted = Math.round(net * exchangeRates.UZS);
-    exDisplay.innerText = `≈ ${converted.toLocaleString()} UZS (som)`;
+    document.getElementById("gross").innerText = grossKRW.toLocaleString() + " KRW";
+    document.getElementById("tax").innerText = taxKRW.toLocaleString() + " KRW";
+    document.getElementById("net").innerText = netUZS.toLocaleString() + " UZS";
 }
 
 fetchRates();
