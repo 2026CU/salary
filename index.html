@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>월급 계산기</title>
 
 <style>
 
 *{
     box-sizing:border-box;
-    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 }
 
 body{
@@ -31,19 +30,23 @@ body{
     box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
-.lang-box{
+.lang-btns{
     text-align:right;
     margin-bottom:10px;
 }
 
-.lang-box button{
+.lang-btns button{
     border:none;
-    background:#e2e8f0;
-    padding:6px 10px;
-    border-radius:8px;
-    margin-left:5px;
+    padding:6px 12px;
+    border-radius:10px;
+    margin-left:4px;
     cursor:pointer;
     font-weight:600;
+}
+
+.active{
+    background:#3b82f6;
+    color:white;
 }
 
 h1{
@@ -120,190 +123,187 @@ label{
 }
 
 .final h2{
-    font-size:42px;
-    font-weight:900;
+    font-size:40px;
+    font-weight:800;
     color:#16a34a;
 }
 
 </style>
 </head>
 
-
 <body>
 
 <div class="container">
 
-<div class="lang-box">
-<button onclick="setLang('ko')">한국어</button>
-<button onclick="setLang('zh')">中文</button>
-<button onclick="setLang('uz')">O'zbek</button>
+<div class="lang-btns">
+    <button onclick="setLang('ko')" id="btn-ko">한국어</button>
+    <button onclick="setLang('zh')" id="btn-zh">中文</button>
+    <button onclick="setLang('uz')" id="btn-uz">O'zbek</button>
 </div>
 
 <h1 id="title">월급 계산기</h1>
 
-<label id="labelDays">출근일수</label>
+<label id="label-days">출근일수</label>
 <div class="counter">
-<button onclick="changeDays(-1)">-</button>
-<input id="days" value="0" readonly>
-<button onclick="changeDays(1)">+</button>
+    <button onclick="changeDays(-1)">-</button>
+    <input id="days" value="0" readonly>
+    <button onclick="changeDays(1)">+</button>
 </div>
 
-<label id="labelSupport">육가공지원 (시간)</label>
+<label id="label-support">육가공지원 (시간)</label>
 <div class="counter">
-<button onclick="changeSupport(-1)">-</button>
-<input id="support" value="0" readonly>
-<button onclick="changeSupport(1)">+</button>
+    <button onclick="changeSupport(-1)">-</button>
+    <input id="support" value="0" readonly>
+    <button onclick="changeSupport(1)">+</button>
 </div>
 
-<label id="labelWash">세척지원 (시간)</label>
+<label id="label-wash">세척지원 (일수)</label>
 <div class="counter">
-<button onclick="changeWash(-1)">-</button>
-<input id="wash" value="0" readonly>
-<button onclick="changeWash(1)">+</button>
+    <button onclick="changeWash(-1)">-</button>
+    <input id="wash" value="0" readonly>
+    <button onclick="changeWash(1)">+</button>
 </div>
 
-<button class="reset" id="resetBtn" onclick="resetAll()">초기화</button>
+<button class="reset" onclick="resetAll()" id="reset-text">초기화</button>
 
 <div class="result-box">
 
-<div class="line">
-<span id="grossLabel">세전 합계</span>
-<strong id="gross">0원</strong>
+    <div class="line">
+        <span id="pretax-text">세전 합계</span>
+        <strong id="gross">0원</strong>
+    </div>
+
+    <div class="line deduction">
+        <span id="tax-text">공제 (3.3%)</span>
+        <strong id="tax">0원</strong>
+    </div>
+
+    <div class="final">
+        <p id="net-text">실수령액</p>
+        <h2 id="net">0원</h2>
+    </div>
+
 </div>
 
-<div class="line deduction">
-<span id="taxLabel">공제 (3.3%)</span>
-<strong id="tax">0원</strong>
-</div>
-
-<div class="final">
-<p id="netLabel">실수령액</p>
-<h2 id="net">0원</h2>
-</div>
-
-</div>
 </div>
 
 <script>
 
 const DAY_PAY = 65000;
 const SUPPORT_PAY = 15480;
-const WASH_PAY = 15480;
+const WASH_PAY = 15480 * 4; // 하루 기준
 const TAX_RATE = 0.033;
 
 let days = 0;
 let support = 0;
 let wash = 0;
-let currentLang = "ko";
 
-const lang = {
+function changeDays(n){
+    days = Math.max(0, days+n);
+    document.getElementById("days").value = days;
+    calc();
+}
+
+function changeSupport(n){
+    support = Math.max(0, support+n);
+    document.getElementById("support").value = support;
+    calc();
+}
+
+function changeWash(n){
+    wash = Math.max(0, wash+n);
+    document.getElementById("wash").value = wash;
+    calc();
+}
+
+function resetAll(){
+    days=0; support=0; wash=0;
+    document.getElementById("days").value=0;
+    document.getElementById("support").value=0;
+    document.getElementById("wash").value=0;
+    calc();
+}
+
+function calc(){
+
+    const gross = (days*DAY_PAY) + (support*SUPPORT_PAY) + (wash*WASH_PAY);
+    const tax = Math.round(gross * TAX_RATE); // ✔ 공제 정상
+    const net = gross - tax;
+
+    const lang = localStorage.getItem("lang") || "ko";
+    const unit = lang==="ko"?"원":lang==="zh"?"韩元":"so'm";
+
+    document.getElementById("gross").innerText =
+        gross.toLocaleString()+" "+unit;
+
+    document.getElementById("tax").innerText =
+        tax.toLocaleString()+" "+unit;
+
+    document.getElementById("net").innerText =
+        net.toLocaleString()+" "+unit;
+}
+
+const text = {
 
 ko:{
 title:"월급 계산기",
 days:"출근일수",
 support:"육가공지원 (시간)",
-wash:"세척지원 (시간)",
+wash:"세척지원 (일수)",
 reset:"초기화",
-gross:"세전 합계",
+pretax:"세전 합계",
 tax:"공제 (3.3%)",
-net:"실수령액",
-won:"원"
+net:"실수령액"
 },
 
 zh:{
 title:"工资计算器",
 days:"出勤天数",
 support:"肉类加工支援 (小时)",
-wash:"清洗支援 (小时)",
+wash:"清洗支援 (天)",
 reset:"重置",
-gross:"税前合计",
+pretax:"税前合计",
 tax:"扣除 (3.3%)",
-net:"实发工资",
-won:"元"
+net:"实发工资"
 },
 
 uz:{
 title:"Oylik kalkulyatori",
 days:"Ish kunlari",
-support:"Go'sht bo'limi yordami (soat)",
-wash:"Yuvish yordami (soat)",
+support:"Go'sht tayyorlash yordami (soat)",
+wash:"Yuvish yordami (kun)",
 reset:"Qayta tiklash",
-gross:"Soliqdan oldin",
+pretax:"Soliqdan oldin",
 tax:"Soliq (3.3%)",
-net:"Qo'lga tegadigan",
-won:"so'm"
+net:"Qo'lga tegadigan"
 }
 
 };
 
-function setLang(l){
+function setLang(lang){
 
-currentLang = l;
-localStorage.setItem("language", l);
+    localStorage.setItem("lang",lang);
 
-document.getElementById("title").innerText = lang[l].title;
-document.getElementById("labelDays").innerText = lang[l].days;
-document.getElementById("labelSupport").innerText = lang[l].support;
-document.getElementById("labelWash").innerText = lang[l].wash;
-document.getElementById("resetBtn").innerText = lang[l].reset;
-document.getElementById("grossLabel").innerText = lang[l].gross;
-document.getElementById("taxLabel").innerText = lang[l].tax;
-document.getElementById("netLabel").innerText = lang[l].net;
+    document.querySelectorAll(".lang-btns button")
+        .forEach(b=>b.classList.remove("active"));
 
-calculate();
+    document.getElementById("btn-"+lang)
+        .classList.add("active");
+
+    document.getElementById("title").innerText=text[lang].title;
+    document.getElementById("label-days").innerText=text[lang].days;
+    document.getElementById("label-support").innerText=text[lang].support;
+    document.getElementById("label-wash").innerText=text[lang].wash;
+    document.getElementById("reset-text").innerText=text[lang].reset;
+    document.getElementById("pretax-text").innerText=text[lang].pretax;
+    document.getElementById("tax-text").innerText=text[lang].tax;
+    document.getElementById("net-text").innerText=text[lang].net;
+
+    calc(); // 🔥 버그 수정 핵심
 }
 
-function changeDays(n){
-days = Math.max(0, days+n);
-document.getElementById("days").value = days;
-calculate();
-}
-
-function changeSupport(n){
-support = Math.max(0, support+n);
-document.getElementById("support").value = support;
-calculate();
-}
-
-function changeWash(n){
-wash = Math.max(0, wash+n);
-document.getElementById("wash").value = wash;
-calculate();
-}
-
-function resetAll(){
-days = support = wash = 0;
-document.getElementById("days").value = 0;
-document.getElementById("support").value = 0;
-document.getElementById("wash").value = 0;
-calculate();
-}
-
-function calculate(){
-
-const gross = (days*DAY_PAY) + (support*SUPPORT_PAY) + (wash*WASH_PAY);
-const tax = Math.round(gross*TAX_RATE);
-const net = gross-tax;
-
-const currency = lang[currentLang].won;
-
-document.getElementById("gross").innerText =
-gross.toLocaleString()+" "+currency;
-
-document.getElementById("tax").innerText =
-tax.toLocaleString()+" "+currency;
-
-document.getElementById("net").innerText =
-net.toLocaleString()+" "+currency;
-}
-
-const savedLang = localStorage.getItem("language");
-
-if(savedLang){
-setLang(savedLang);
-}else{
-calculate();
-}
+// 최초 실행 (언어 유지 + 공제 바로 계산)
+setLang(localStorage.getItem("lang") || "ko");
 
 </script>
 
