@@ -81,21 +81,26 @@
 
     .counter{ display:flex; gap:10px; }
 
-    .counter input{
+.counter input{
         flex:1; 
         text-align:center; 
-        font-size:22px;
+        font-size:24px; /* 숫자를 조금 더 키웠습니다 */
+        font-weight: 700; /* 가독성을 위해 굵게 설정 */
         border:1px solid var(--input-border);
         border-radius:12px; 
         height:55px;
         background: var(--card-bg);
         color: var(--text-color);
-        /* 중앙 정렬 보정 코드 */
-        line-height: 55px; 
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        
+        /* 중앙 정렬 핵심 보정 */
+        display: inline-block; /* 또는 block */
+        vertical-align: middle;
+        line-height: normal; /* 고정값 대신 normal 설정 */
+        padding: 4px 0 0 0;  /* 위쪽에 4px 패딩을 주어 숫자를 아래로 살짝 밀어줌 */
+        
+        /* 아이폰/안드로이드 기본 스타일 제거 */
+        -webkit-appearance: none;
+        appearance: none;
     }
 
     .counter button{
@@ -304,4 +309,5 @@ setLang(localStorage.getItem("lang") || "ko");
 
 </body>
 </html>
+
 
