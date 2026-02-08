@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Oylik Kalkulyatori (UZS)</title>
+<title>Oylik Kalkulyatori (KRW)</title>
 
 <style>
     :root {
@@ -141,21 +141,16 @@
         color: #4ade80; 
         margin: 8px 0 0 0; 
     }
-
-    .rate-info {
-        font-size: 11px;
-        color: #64748b;
-        margin-top: 8px;
-        text-align: center;
-    }
 </style>
 </head>
 
 <body>
 
 <div class="container">
+    <!-- 월급 계산기 -->
     <h1>Oylik Kalkulyatori</h1>
 
+    <!-- 근무일수 (6시간 - 65,000원) -->
     <label>Ish kunlari (6s - 65,000 KRW)</label>
     <div class="counter">
         <button onclick="changeVal('days6', -1)">-</button>
@@ -163,6 +158,7 @@
         <button onclick="changeVal('days6', 1)">+</button>
     </div>
 
+    <!-- 근무일수 (9시간 - 95,000원) -->
     <label>Ish kunlari (9s - 95,000 KRW)</label>
     <div class="counter">
         <button onclick="changeVal('days9', -1)">-</button>
@@ -170,67 +166,61 @@
         <button onclick="changeVal('days9', 1)">+</button>
     </div>
 
-    <label>Yuvish sexida yordam (1s - 15,480 KRW)</label>
+    <!-- 세척장 도움 (1시간 - 2026년 최저시급 10,320원) -->
+    <label>Yuvish sexida yordam (1s - 10,320 KRW)</label>
     <div class="counter">
         <button onclick="changeVal('support', -1)">-</button>
         <input id="support" value="0" readonly>
         <button onclick="changeVal('support', 1)">+</button>
     </div>
 
+    <!-- 초기화 버튼 -->
     <button class="reset" onclick="resetAll()">Tozalash</button>
 
+    <!-- 결과 박스 -->
     <div class="result-box">
+        <!-- 세전 금액 (KRW) -->
         <div class="line">
             <span>KRW (Soliqsiz)</span>
             <strong id="gross">0 KRW</strong>
         </div>
+        <!-- 공제액 (3.3%) -->
         <div class="line deduction">
             <span>Ushlanma (3.3%)</span>
             <strong id="tax">0 KRW</strong>
         </div>
+        <!-- 최종 실수령액 (KRW) -->
         <div class="final">
-            <p>Qo'lga tegadigan summa (UZS)</p>
-            <h2 id="net">0 UZS</h2>
-            <div id="rate-display" class="rate-info">Valyuta kursini yuklash...</div>
+            <p>Qo'lga tegadigan summa (KRW)</p>
+            <h2 id="net">0 KRW</h2>
         </div>
     </div>
 </div>
 
 <script>
+// 급여 정보 (6시간: 65,000원 / 9시간: 95,000원 / 세척장 도움: 10,320원 - 2026년 최저시급)
 const PAY = {
     days6: 65000,
     days9: 95000,
-    support: 15480
+    support: 10320
 };
-const TAX_RATE = 0.033;
-let KRW_TO_UZS = 9.7;
+const TAX_RATE = 0.033; // 세율 3.3%
 
+// 사용자 입력 데이터
 let data = {
     days6: 0,
     days9: 0,
     support: 0
 };
 
-async function fetchRates() {
-    try {
-        const response = await fetch('https://open.er-api.com/v6/latest/KRW');
-        const resData = await response.json();
-        if(resData && resData.rates && resData.rates.UZS) {
-            KRW_TO_UZS = resData.rates.UZS;
-            document.getElementById('rate-display').innerText = `Kurs: 1 KRW ≈ ${KRW_TO_UZS.toFixed(2)} UZS`;
-            calc();
-        }
-    } catch (e) { 
-        document.getElementById('rate-display').innerText = "Valyuta kursini yangilab bo'lmadi";
-    }
-}
-
+// 값 증감 함수 (+/- 버튼)
 function changeVal(key, n){
-    data[key] = Math.max(0, data[key] + n);
+    data[key] = Math.max(0, data[key] + n); // 0 이하로 안내려가게
     document.getElementById(key).value = data[key];
     calc();
 }
 
+// 전체 초기화
 function resetAll(){
     data = { days6: 0, days9: 0, support: 0 };
     document.getElementById("days6").value = 0;
@@ -239,18 +229,19 @@ function resetAll(){
     calc();
 }
 
+// 급여 계산
 function calc(){
-    const grossKRW = (data.days6 * PAY.days6) + (data.days9 * PAY.days9) + (data.support * PAY.support);
-    const taxKRW = Math.round(grossKRW * TAX_RATE);
-    const netKRW = grossKRW - taxKRW;
-    const netUZS = Math.round(netKRW * KRW_TO_UZS);
+    const grossKRW = (data.days6 * PAY.days6) + (data.days9 * PAY.days9) + (data.support * PAY.support); // 총 세전 금액
+    const taxKRW = Math.round(grossKRW * TAX_RATE); // 세금 (3.3%)
+    const netKRW = grossKRW - taxKRW; // 세후 금액 (KRW)
     
     document.getElementById("gross").innerText = grossKRW.toLocaleString() + " KRW";
     document.getElementById("tax").innerText = taxKRW.toLocaleString() + " KRW";
-    document.getElementById("net").innerText = netUZS.toLocaleString() + " UZS";
+    document.getElementById("net").innerText = netKRW.toLocaleString() + " KRW";
 }
 
-fetchRates();
+// 페이지 로드시 초기 계산
+calc();
 </script>
 
 </body>
