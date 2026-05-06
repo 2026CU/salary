@@ -45,7 +45,7 @@
 
     .container {
         width: 100%;
-        max-width: 400px; /* 컨테이너 최대 너비 고정 */
+        max-width: 400px;
         background: var(--card-bg);
         padding: 24px;
         border-radius: 24px;
@@ -59,13 +59,14 @@
 
     .lang-btns button {
         border: none;
-        padding: 6px 12px;
+        padding: 6px 10px;
         border-radius: 10px;
-        margin-left: 4px;
+        margin-left: 2px;
         cursor: pointer;
         font-weight: 600;
         background: var(--result-bg);
         color: var(--text-color);
+        font-size: 13px;
     }
 
     .active {
@@ -77,7 +78,6 @@
 
     label { font-weight: 600; display: block; margin-top: 18px; margin-bottom: 8px; font-size: 15px; }
 
-    /* 버튼이 튀어나가지 않게 조정한 핵심 부분 */
     .counter { 
         display: flex; 
         gap: 8px; 
@@ -87,7 +87,7 @@
 
     .counter input {
         flex: 1; 
-        min-width: 0; /* flex 안에서 줄어들 수 있도록 설정 */
+        min-width: 0;
         text-align: center; 
         font-size: 24px;
         font-weight: 700;
@@ -106,7 +106,7 @@
     .counter button {
         width: 55px; 
         height: 55px;
-        flex-shrink: 0; /* 버튼 크기 고정 */
+        flex-shrink: 0;
         border: none; 
         background: #3b82f6;
         color: white; 
@@ -166,23 +166,38 @@
 <div class="container">
     <div class="lang-btns">
         <button onclick="setLang('ko')" id="btn-ko">한국어</button>
+        <button onclick="setLang('uz')" id="btn-uz">O'zbekcha</button>
         <button onclick="setLang('zh')" id="btn-zh">中文</button>
     </div>
 
     <h1 id="title">월급 계산기(프리랜서)</h1>
 
-    <label id="label-days">출근일수 (6시간 - 65,000원)</label>
+    <label id="label-days8">출근일수 (8시간 - 95,000원)</label>
     <div class="counter">
-        <button onclick="changeDays(-1)">-</button>
-        <input id="days" value="0" readonly>
-        <button onclick="changeDays(1)">+</button>
+        <button onclick="changeValue('days8', -1)">-</button>
+        <input id="days8" value="0" readonly>
+        <button onclick="changeValue('days8', 1)">+</button>
+    </div>
+
+    <label id="label-days6">출근일수 (6시간 - 65,000원)</label>
+    <div class="counter">
+        <button onclick="changeValue('days6', -1)">-</button>
+        <input id="days6" value="0" readonly>
+        <button onclick="changeValue('days6', 1)">+</button>
     </div>
 
     <label id="label-support">육가공지원 (1시간-15,480원)</label>
     <div class="counter">
-        <button onclick="changeSupport(-1)">-</button>
+        <button onclick="changeValue('support', -1)">-</button>
         <input id="support" value="0" readonly>
-        <button onclick="changeSupport(1)">+</button>
+        <button onclick="changeValue('support', 1)">+</button>
+    </div>
+
+    <label id="label-meal">식대 (일요일 8시간 근무 시 10,000원)</label>
+    <div class="counter">
+        <button onclick="changeValue('meal', -1)">-</button>
+        <input id="meal" value="0" readonly>
+        <button onclick="changeValue('meal', 1)">+</button>
     </div>
 
     <button class="reset" onclick="resetAll()" id="reset-text">초기화</button>
@@ -205,46 +220,51 @@
 </div>
 
 <script>
-const DAY_PAY = 65000;
-const SUPPORT_PAY = 15480;
+const PAY = {
+    days8: 95000,
+    days6: 65000,
+    support: 15480,
+    meal: 10000
+};
 const TAX_RATE = 0.033;
 
-let exchangeRates = { CNY: 0.0053 }; 
-let days = 0;
-let support = 0;
+let exchangeRates = { UZS: 9.3, CNY: 0.0053 }; 
+let values = {
+    days8: 0,
+    days6: 0,
+    support: 0,
+    meal: 0
+};
 
 async function fetchRates() {
     try {
         const response = await fetch('https://open.er-api.com/v6/latest/KRW');
         const data = await response.json();
         if(data && data.rates) {
+            exchangeRates.UZS = data.rates.UZS;
             exchangeRates.CNY = data.rates.CNY;
             calc();
         }
     } catch (e) { console.error("환율 로드 실패", e); }
 }
 
-function changeDays(n){
-    days = Math.max(0, days+n);
-    document.getElementById("days").value = days;
-    calc();
-}
-
-function changeSupport(n){
-    support = Math.max(0, support+n);
-    document.getElementById("support").value = support;
+function changeValue(type, n){
+    values[type] = Math.max(0, values[type] + n);
+    document.getElementById(type).value = values[type];
     calc();
 }
 
 function resetAll(){
-    days=0; support=0;
-    document.getElementById("days").value=0;
-    document.getElementById("support").value=0;
+    for(let key in values) {
+        values[key] = 0;
+        document.getElementById(key).value = 0;
+    }
     calc();
 }
 
 function calc(){
-    const gross = (days * DAY_PAY) + (support * SUPPORT_PAY);
+    const gross = (values.days8 * PAY.days8) + (values.days6 * PAY.days6) + 
+                  (values.support * PAY.support) + (values.meal * PAY.meal);
     const tax = Math.round(gross * TAX_RATE);
     const net = gross - tax;
     const lang = localStorage.getItem("lang") || "ko";
@@ -254,26 +274,44 @@ function calc(){
     document.getElementById("net").innerText = net.toLocaleString() + " 원";
 
     const exDisplay = document.getElementById("ex-rate-display");
-    if (lang === "zh") {
+    if (lang === "uz") {
+        const converted = (net * exchangeRates.UZS).toFixed(0);
+        exDisplay.innerText = `≈ ${parseFloat(converted).toLocaleString()} UZS (So'm)`;
+    } else if (lang === "zh") {
         const converted = (net * exchangeRates.CNY).toFixed(2);
-        exDisplay.innerText = `≈ ${parseFloat(converted).toLocaleString()} CNY (위안)`;
+        exDisplay.innerText = `≈ ${parseFloat(converted).toLocaleString()} CNY (元)`;
     } else { exDisplay.innerText = ""; }
 }
 
 const text = {
     ko:{
         title:"월급 계산기(프리랜서)",
-        days:"출근일수 (6시간 - 65,000원)",
+        days8:"출근일수 (8시간 - 95,000원)",
+        days6:"출근일수 (6시간 - 65,000원)",
         support:"육가공지원 (1시간-15,480원)",
+        meal:"식대 (일요일 8시간 근무 시 10,000원)",
         reset:"초기화",
         pretax:"세전 합계",
         tax:"공제 (3.3%)",
         net:"실수령액"
     },
+    uz:{
+        title:"Oylik hisoblagich",
+        days8:"Ish kunlari (8 soat - 95,000₩)",
+        days6:"Ish kunlari (6 soat - 65,000₩)",
+        support:"Go'shtni qayta ishlash (1 soat - 15,480₩)",
+        meal:"Ovqat puli (Yakshanba 8 soatlik ish uchun 10,000₩)",
+        reset:"Tozalash",
+        pretax:"Jami (soliqsiz)",
+        tax:"Ushlanma (3.3%)",
+        net:"Qo'lga tegadigan miqdor"
+    },
     zh:{
-        title:"工资计算器",
-        days:"出勤天数 (6小时 - 65,000원)",
+        title:"工资计算器(兼职)",
+        days8:"出勤天数 (8小时 - 95,000원)",
+        days6:"出勤天数 (6小时 - 65,000원)",
         support:"肉类加工支援 (1小时 - 15,480원)",
+        meal:"伙食费 (周日工作8小时 10,000원)",
         reset:"重置",
         pretax:"税前合计",
         tax:"扣除 (3.3%)",
@@ -288,8 +326,10 @@ function setLang(lang){
     if(targetBtn) targetBtn.classList.add("active");
 
     document.getElementById("title").innerText=text[lang].title;
-    document.getElementById("label-days").innerText=text[lang].days;
+    document.getElementById("label-days8").innerText=text[lang].days8;
+    document.getElementById("label-days6").innerText=text[lang].days6;
     document.getElementById("label-support").innerText=text[lang].support;
+    document.getElementById("label-meal").innerText=text[lang].meal;
     document.getElementById("reset-text").innerText=text[lang].reset;
     document.getElementById("pretax-text").innerText=text[lang].pretax;
     document.getElementById("tax-text").innerText=text[lang].tax;
