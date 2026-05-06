@@ -18,24 +18,17 @@
     }
 
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-
     html { font-size: 16px; transition: font-size 0.15s; }
-
     body { margin: 0; background: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-color); padding: 1rem; transition: background 0.3s; }
-
     .container { width: 100%; max-width: 25rem; background: var(--card-bg); padding: 1.5rem; border-radius: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: background 0.3s; }
 
     .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; gap: 0.4rem; flex-wrap: wrap; }
-
     .lang-btns { display: flex; gap: 0.15rem; }
     .lang-btns button { border: none; padding: 0.35rem 0.6rem; border-radius: 0.6rem; cursor: pointer; font-weight: 600; background: var(--btn-bg); color: var(--text-color); font-size: 0.8rem; }
-
     .font-ctrl { display: flex; align-items: center; gap: 0.25rem; }
     .font-ctrl span { font-size: 0.75rem; color: #64748b; font-weight: 600; min-width: 2rem; text-align: center; }
     .font-ctrl button { border: none; width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; background: var(--btn-bg); color: var(--text-color); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-
     .dark-btn { border: none; padding: 0.35rem 0.6rem; border-radius: 0.6rem; cursor: pointer; font-weight: 600; background: var(--btn-bg); color: var(--text-color); font-size: 0.8rem; white-space: nowrap; }
-
     .active { background: var(--accent-color) !important; color: white !important; }
 
     h1 { text-align: center; margin: 0.6rem 0 1.2rem 0; font-size: 1.5rem; }
@@ -44,19 +37,40 @@
     .info-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
     .info-group { flex: 1; }
     .info-group label { font-size: 0.75rem; margin-bottom: 0.25rem; color: #64748b; display: block; text-align: center; }
-    .info-group input { width: 100%; border: 1px solid var(--input-border); border-radius: 0.5rem; padding: 0.5rem; font-size: 0.875rem; background: var(--card-bg); color: var(--text-color); outline: none; text-align: center; font-weight: 600; }
+    .info-group input {
+        width: 100%; border: 1px solid var(--input-border); border-radius: 0.5rem;
+        padding: 0.5rem; font-size: 0.875rem; background: var(--card-bg); color: var(--text-color);
+        outline: none; text-align: center; font-weight: 600; cursor: pointer;
+    }
     .info-notice { font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 0.5rem; font-weight: 800; letter-spacing: -0.03em; }
 
-    label { font-weight: 600; display: block; margin-top: 1.1rem; margin-bottom: 0.5rem; font-size: 0.9rem; }
-
-    .counter { display: flex; gap: 0.5rem; width: 100%; align-items: center; }
-    .counter-display {
-        flex: 1; min-width: 0; height: 3.4rem;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.75rem; font-weight: 800;
-        border: 1px solid var(--input-border); border-radius: 0.75rem;
-        background: var(--card-bg); color: var(--text-color); user-select: none;
+    /* 달력 팝업 */
+    .cal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+    .cal-overlay.open { display: flex; }
+    .cal-box { background: var(--card-bg); border-radius: 1rem; padding: 1.2rem; width: 20rem; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+    .cal-header button { border: none; background: var(--btn-bg); color: var(--text-color); border-radius: 0.5rem; width: 2rem; height: 2rem; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .cal-header span { font-weight: 700; font-size: 1rem; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.2rem; }
+    .cal-dow { text-align: center; font-size: 0.7rem; font-weight: 700; color: #64748b; padding: 0.3rem 0; }
+    .cal-dow:first-child { color: #ef4444; }
+    .cal-dow:last-child { color: #3b82f6; }
+    .cal-day {
+        text-align: center; padding: 0.45rem 0; border-radius: 0.4rem;
+        font-size: 0.85rem; cursor: pointer; font-weight: 500;
+        transition: background 0.1s;
     }
+    .cal-day:hover { background: var(--btn-bg); }
+    .cal-day.empty { cursor: default; }
+    .cal-day.in-week { background: rgba(59,130,246,0.2); }
+    .cal-day.week-start { background: var(--accent-color); color: white; border-radius: 0.4rem 0 0 0.4rem; }
+    .cal-day.week-end { background: var(--accent-color); color: white; border-radius: 0 0.4rem 0.4rem 0; }
+    .cal-day.today { outline: 2px solid var(--accent-color); }
+    .cal-cancel { margin-top: 0.8rem; width: 100%; border: none; background: var(--btn-bg); color: var(--text-color); border-radius: 0.5rem; padding: 0.6rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+
+    label { font-weight: 600; display: block; margin-top: 1.1rem; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .counter { display: flex; gap: 0.5rem; width: 100%; align-items: center; }
+    .counter-display { flex: 1; min-width: 0; height: 3.4rem; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 800; border: 1px solid var(--input-border); border-radius: 0.75rem; background: var(--card-bg); color: var(--text-color); user-select: none; }
     .counter button { width: 3.4rem; height: 3.4rem; flex-shrink: 0; border: none; background: var(--accent-color); color: white; font-size: 1.5rem; border-radius: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
     .btn-group { display: flex; gap: 0.5rem; margin-top: 1.2rem; }
@@ -72,8 +86,21 @@
 </style>
 </head>
 <body>
-<div class="container" id="capture-area">
 
+<!-- 달력 팝업 -->
+<div class="cal-overlay" id="cal-overlay">
+    <div class="cal-box">
+        <div class="cal-header">
+            <button onclick="moveMonth(-1)">‹</button>
+            <span id="cal-title"></span>
+            <button onclick="moveMonth(1)">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <button class="cal-cancel" onclick="closeCal()">닫기</button>
+    </div>
+</div>
+
+<div class="container" id="capture-area">
     <div class="toolbar">
         <div class="lang-btns">
             <button onclick="setLang('ko')" id="btn-ko">한국어</button>
@@ -98,7 +125,7 @@
             </div>
             <div class="info-group">
                 <label id="label-period">근무 기간</label>
-                <input type="text" id="user-period" placeholder="예: 5.4~5.11">
+                <input type="text" id="user-period" placeholder="달력 선택" readonly onclick="openCal()">
             </div>
         </div>
         <div class="info-notice" id="label-notice">* 화면 저장 시에만 입력해 주세요 *</div>
@@ -110,28 +137,24 @@
         <div class="counter-display" id="days8">0</div>
         <button onclick="changeValue('days8', 1)">+</button>
     </div>
-
     <label id="label-days6">출근일수 (6시간 - 65,000원)</label>
     <div class="counter">
         <button onclick="changeValue('days6', -1)">-</button>
         <div class="counter-display" id="days6">0</div>
         <button onclick="changeValue('days6', 1)">+</button>
     </div>
-
     <label id="label-early">조출지원 (3시간 - 51,600원)</label>
     <div class="counter">
         <button onclick="changeValue('early', -1)">-</button>
         <div class="counter-display" id="early">0</div>
         <button onclick="changeValue('early', 1)">+</button>
     </div>
-
     <label id="label-support">육가공지원 (1시간-15,480원)</label>
     <div class="counter">
         <button onclick="changeValue('support', -1)">-</button>
         <div class="counter-display" id="support">0</div>
         <button onclick="changeValue('support', 1)">+</button>
     </div>
-
     <label id="label-meal">식대 (일요일 8시간 근무 시 10,000원)</label>
     <div class="counter">
         <button onclick="changeValue('meal', -1)">-</button>
@@ -170,7 +193,7 @@ let values = { days8: 0, days6: 0, early: 0, support: 0, meal: 0 };
 let fontSize = parseInt(localStorage.getItem("fontSize") || "16");
 let isDark = localStorage.getItem("theme") !== "light";
 
-/* ── 글자 크기: html의 font-size를 바꾸면 rem 단위 전체가 같이 커짐 ── */
+/* ── 글자 크기 ── */
 function applyFont() {
     fontSize = Math.max(12, Math.min(22, fontSize));
     document.documentElement.style.fontSize = fontSize + "px";
@@ -187,6 +210,80 @@ function applyTheme() {
 }
 function toggleDark() { isDark = !isDark; applyTheme(); }
 
+/* ── 달력 ── */
+let calYear, calMonth;
+
+function openCal() {
+    const now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth();
+    renderCal();
+    document.getElementById("cal-overlay").classList.add("open");
+}
+function closeCal() {
+    document.getElementById("cal-overlay").classList.remove("open");
+}
+function moveMonth(n) {
+    calMonth += n;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    renderCal();
+}
+
+function renderCal() {
+    document.getElementById("cal-title").innerText = `${calYear}년 ${calMonth+1}월`;
+    const grid = document.getElementById("cal-grid");
+    grid.innerHTML = "";
+
+    const dows = ["일","월","화","수","목","금","토"];
+    dows.forEach(d => {
+        const el = document.createElement("div");
+        el.className = "cal-dow";
+        el.innerText = d;
+        grid.appendChild(el);
+    });
+
+    const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=일
+    const lastDate = new Date(calYear, calMonth+1, 0).getDate();
+    const today = new Date();
+
+    // 빈칸
+    for (let i = 0; i < firstDay; i++) {
+        const el = document.createElement("div");
+        el.className = "cal-day empty";
+        grid.appendChild(el);
+    }
+
+    for (let d = 1; d <= lastDate; d++) {
+        const el = document.createElement("div");
+        el.className = "cal-day";
+        el.innerText = d;
+
+        const isToday = (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear());
+        if (isToday) el.classList.add("today");
+
+        el.onclick = () => selectWeek(d);
+        grid.appendChild(el);
+    }
+}
+
+function selectWeek(day) {
+    const clicked = new Date(calYear, calMonth, day);
+    // 월요일(1) 기준 주 시작 계산
+    const dow = clicked.getDay(); // 0=일
+    const diffToMon = (dow === 0) ? -6 : 1 - dow;
+    const mon = new Date(clicked);
+    mon.setDate(clicked.getDate() + diffToMon);
+    const sun = new Date(mon);
+    sun.setDate(mon.getDate() + 6);
+
+    // 표시: M.D ~ M.D
+    const fmt = d => `${d.getMonth()+1}.${d.getDate()}`;
+    document.getElementById("user-period").value = `${fmt(mon)} ~ ${fmt(sun)}`;
+
+    closeCal();
+}
+
 /* ── 카운터 ── */
 function changeValue(type, n) {
     const newValue = values[type] + n;
@@ -202,7 +299,6 @@ function resetAll() {
     document.getElementById("user-period").value = "";
     calc();
 }
-
 function captureScreen() {
     const name = document.getElementById("user-name").value || "근무자";
     html2canvas(document.getElementById("capture-area"), { backgroundColor: null, scale: 2, useCORS: true }).then(canvas => {
@@ -227,7 +323,6 @@ function calc() {
     else if (lang === "zh") ex.innerText = `≈ ${(net * exchangeRates.CNY).toFixed(2)} CNY (元)`;
     else ex.innerText = "";
 }
-
 async function fetchRates() {
     try {
         const res = await fetch('https://open.er-api.com/v6/latest/KRW');
@@ -240,7 +335,7 @@ async function fetchRates() {
 const text = {
     ko:{ title:"주급 계산기", name:"성함", period:"근무 기간", notice:"* 화면 저장 시에만 입력해 주세요 *", days8:"출근일수 (8시간 - 95,000원)", days6:"출근일수 (6시간 - 65,000원)", early:"조출지원 (3시간 - 51,600원)", support:"육가공지원 (1시간-15,480원)", meal:"식대 (일요일 8시간 근무 시 10,000원)", reset:"초기화", capture:"화면 저장", pretax:"세전 합계", tax:"공제 (3.3%)", net:"실수령액" },
     uz:{ title:"Haftalik hisoblagich", name:"Ism", period:"Ish davri", notice:"* Faqat rasmga olishda to'ldiring *", days8:"Ish kunlari (8 soat - 95,000₩)", days6:"Ish kunlari (6 soat - 65,000₩)", early:"Erta ish (3 soat - 51,600₩)", support:"Go'sht ishi (1 soat - 15,480₩)", meal:"Ovqat puli (Yakshanba 10,000₩)", reset:"Tozalash", capture:"Saqlash", pretax:"Jami", tax:"Soliq (3.3%)", net:"Qo'lga tegadigan" },
-    zh:{ title:"周薪计算器", name:"姓名", period:"工作期间", notice:"* 仅在保存图片时填写 *", days8:"出勤 (8h - 95,000원)", days6:"出勤 (6h - 65,000원)", early:"提早出勤 (3h - 51,600원)", support:"肉类加工 (1h - 15,480원)", meal:"伙食费 (周日 10,000원)", reset:"重置", capture:"保存", pretax:"税前合计", tax:"扣除 (3.3%)", net:"实发工资" }
+    zh:{ title:"周薪计算器", name:"姓名", period:"工作期间", notice:"* 仅在保存图片时填写 *", days8:"出勤 (8h - 95,000원)", days6:"出勤 (6h - 65,000원)", early:"提早出勤 (3h - 51,600원)", support:"肉类加工 (1h - 15,480원)", meal:"伙食费 (周日 10,000원)", reset:"重置", capture:"保存", pretax:"税前합계", tax:"扣除 (3.3%)", net:"实发工资" }
 };
 function setLang(lang) {
     localStorage.setItem("lang", lang);
