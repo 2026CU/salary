@@ -186,6 +186,13 @@
         <button onclick="changeValue('days6', 1)">+</button>
     </div>
 
+    <label id="label-early">조출지원 (3시간 - 51,600원)</label>
+    <div class="counter">
+        <button onclick="changeValue('early', -1)">-</button>
+        <input id="early" value="0" readonly>
+        <button onclick="changeValue('early', 1)">+</button>
+    </div>
+
     <label id="label-support">육가공지원 (1시간-15,480원)</label>
     <div class="counter">
         <button onclick="changeValue('support', -1)">-</button>
@@ -223,6 +230,7 @@
 const PAY = {
     days8: 95000,
     days6: 65000,
+    early: 51600,
     support: 15480,
     meal: 10000
 };
@@ -232,6 +240,7 @@ let exchangeRates = { UZS: 9.3, CNY: 0.0053 };
 let values = {
     days8: 0,
     days6: 0,
+    early: 0,
     support: 0,
     meal: 0
 };
@@ -264,7 +273,8 @@ function resetAll(){
 
 function calc(){
     const gross = (values.days8 * PAY.days8) + (values.days6 * PAY.days6) + 
-                  (values.support * PAY.support) + (values.meal * PAY.meal);
+                  (values.early * PAY.early) + (values.support * PAY.support) + 
+                  (values.meal * PAY.meal);
     const tax = Math.round(gross * TAX_RATE);
     const net = gross - tax;
     const lang = localStorage.getItem("lang") || "ko";
@@ -288,6 +298,7 @@ const text = {
         title:"주급 계산기(프리랜서)",
         days8:"출근일수 (8시간 - 95,000원)",
         days6:"출근일수 (6시간 - 65,000원)",
+        early:"조출지원 (3시간 - 51,600원)",
         support:"육가공지원 (1시간-15,480원)",
         meal:"식대 (일요일 8시간 근무 시 10,000원)",
         reset:"초기화",
@@ -299,6 +310,7 @@ const text = {
         title:"Haftalik maosh hisoblagich",
         days8:"Ish kunlari (8 soat - 95,000₩)",
         days6:"Ish kunlari (6 soat - 65,000₩)",
+        early:"Erta ishga chiqish (3 soat - 51,600₩)",
         support:"Go'shtni qayta ishlash (1 soat - 15,480₩)",
         meal:"Ovqat puli (Yakshanba 8 soatlik ish uchun 10,000₩)",
         reset:"Tozalash",
@@ -310,6 +322,7 @@ const text = {
         title:"周薪计算器(兼职)",
         days8:"出勤天数 (8小时 - 95,000원)",
         days6:"出勤天数 (6小时 - 65,000원)",
+        early:"提早出勤支援 (3小时 - 51,600원)",
         support:"肉类加工支援 (1小时 - 15,480원)",
         meal:"伙食费 (周日工作8小时 10,000원)",
         reset:"重置",
@@ -328,6 +341,7 @@ function setLang(lang){
     document.getElementById("title").innerText=text[lang].title;
     document.getElementById("label-days8").innerText=text[lang].days8;
     document.getElementById("label-days6").innerText=text[lang].days6;
+    document.getElementById("label-early").innerText=text[lang].early;
     document.getElementById("label-support").innerText=text[lang].support;
     document.getElementById("label-meal").innerText=text[lang].meal;
     document.getElementById("reset-text").innerText=text[lang].reset;
