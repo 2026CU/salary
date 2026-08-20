@@ -142,7 +142,7 @@
         <div class="counter-display" id="days6">0</div>
         <button onclick="changeValue('days6', 1)">+</button>
     </div>
-    <label id="label-early">조출지원 (3시간 - 51,600원)</label>
+    <label id="label-early">조출지원 (3시간 - 36,120원)</label>
     <div class="counter">
         <button onclick="changeValue('early', -1)">-</button>
         <div class="counter-display" id="early">0</div>
@@ -184,7 +184,7 @@
 </div>
 
 <script>
-const PAY = { days8: 95000, days6: 65000, early: 51600, support: 15480, meal: 10000 };
+const PAY = { days8: 95000, days6: 65000, early: 36120, support: 15480, meal: 10000 };
 const TAX_RATE = 0.033;
 const MAX_DAYS = 7;
 let exchangeRates = { UZS: 9.3, CNY: 0.0053 };
@@ -336,9 +336,9 @@ async function fetchRates() {
 
 /* ── 언어 ── */
 const text = {
-    ko:{ title:"주급 계산기", name:"성함", period:"근무 기간", notice:"* 화면 저장 시에만 입력해 주세요 *", days8:"출근일수 (8시간 - 95,000원)", days6:"출근일수 (6시간 - 65,000원)", early:"조출지원 (3시간 - 51,600원)", support:"육가공지원/잔업 (1시간-15,480원)", meal:"식대 (일요일 8시간 근무 시 10,000원)", reset:"초기화", capture:"화면 저장", pretax:"세전 합계", tax:"공제 (3.3%)", net:"실수령액" },
-    uz:{ title:"Haftalik hisoblagich", name:"Ism", period:"Ish davri", notice:"* Faqat rasmga olishda to'ldiring *", days8:"Ish kunlari (8 soat - 95,000₩)", days6:"Ish kunlari (6 soat - 65,000₩)", early:"Erta ish (3 soat - 51,600₩)", support:"Go'sht ishi/Qo'shimcha ish (1 soat - 15,480₩)", meal:"Ovqat puli (Yakshanba 10,000₩)", reset:"Tozalash", capture:"Saqlash", pretax:"Jami", tax:"Soliq (3.3%)", net:"Qo'lga tegadigan" },
-    zh:{ title:"周薪计算器", name:"姓名", period:"工作期间", notice:"* 仅在保存图片时填写 *", days8:"出勤 (8h - 95,000원)", days6:"出勤 (6h - 65,000원)", early:"提早出勤 (3h - 51,600원)", support:"肉类加工/加班 (1h - 15,480원)", meal:"伙食费 (周日 10,000원)", reset:"重置", capture:"保存", pretax:"税前합계", tax:"扣除 (3.3%)", net:"实发工资" }
+    ko:{ title:"주급 계산기", name:"성함", period:"근무 기간", notice:"* 화면 저장 시에만 입력해 주세요 *", days8:"출근일수 (8시간 - 95,000원)", days6:"출근일수 (6시간 - 65,000원)", early:"조출지원 (3시간 - 36,120원)", support:"육가공지원/잔업 (1시간-15,480원)", meal:"식대 (일요일 8시간 근무 시 10,000원)", reset:"초기화", capture:"화면 저장", pretax:"세전 합계", tax:"공제 (3.3%)", net:"실수령액" },
+    uz:{ title:"Haftalik hisoblagich", name:"Ism", period:"Ish davri", notice:"* Faqat rasmga olishda to'ldiring *", days8:"Ish kunlari (8 soat - 95,000₩)", days6:"Ish kunlari (6 soat - 65,000₩)", early:"Erta ish (3 soat - 36,120₩)", support:"Go'sht ishi/Qo'shimcha ish (1 soat - 15,480₩)", meal:"Ovqat puli (Yakshanba 10,000₩)", reset:"Tozalash", capture:"Saqlash", pretax:"Jami", tax:"Soliq (3.3%)", net:"Qo'lga tegadigan" },
+    zh:{ title:"周薪计算器", name:"姓名", period:"工作期间", notice:"* 仅在保存图片时填写 *", days8:"出勤 (8h - 95,000원)", days6:"出勤 (6h - 65,000원)", early:"提早出勤 (3h - 36,120원)", support:"肉类加工/加班 (1h - 15,480원)", meal:"伙食费 (周日 10,000원)", reset:"重置", capture:"保存", pretax:"税前합계", tax:"扣除 (3.3%)", net:"实发工资" }
 };
 function setLang(lang) {
     localStorage.setItem("lang", lang);
